@@ -1,0 +1,308 @@
+{#<!doctype html>#}
+{% extends "manager/base.html" %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% block links %}
+        {{ block.super }}
+        <script type="text/javascript" src="/statics/js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="/statics/js/bootstrap.min.js"></script>
+        <title>公告管理</title>
+        <script src="/statics/js/pdfobject.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    {% endblock %}
+</head>
+<body>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      {% block navbar %}
+          {{ block.super }}
+      {% endblock %}
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        {% block sidebar %}
+            {{ block.super }}
+            <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="row">
+                    <div class="col-12 grid-margin">
+                        <div class="card">
+                          <div class="card-body">
+                              <div class="table-responsive" id="staff">
+                                  <nav class="mb-3">
+                                      <button class="btn btn-success" id="staff-add-btn">添加新公告+</button>
+                                  </nav>
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th></th>
+                                        <th> 公告ID </th>
+                                          <th>公告标题</th>
+                                        <th> 公告内容 </th>
+                                          <th>公告文件</th>
+                                          <th>是否公布</th>
+                                        <th> 公告发布时间 </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in notices %}
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td><a class="nav-link staffId" href="/staff/{{ name }}/{{ item.nId }}/notice_info">{{ item.nId }}</a></td>
+                                                <td class="noticeName">{{ item.noticeName }}</td>
+                                                <td class="noticeContent">{{ item.noticeContent }}</td>
+                                                <td class="noticeFile"><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal2">点击预览</button></td>
+                                                <div class="modal fade" id="myModal2">
+                                                <div class="modal-dialog align-content-center" style="width: 120%">
+                                                  <div id="pdfContainer" class="border-2" style="margin-top: 0px;height: 900px;width: 120%"></div>
+                                                  <script>
+
+                                                    const pdfdata = "{{ item.noticeFile }}"; // 替换为实际的PDF文件路径
+                                                    /*
+                                                    var url = "/statics/images/test任务需求.pdf"
+                                                    {#const loadingTask = pdfjsLib.getDocument({data: pdfdata});#}
+                                                    const loadingTask = pdfjsLib.getDocument(url)
+                                                    pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                                                      var numPages = pdf.numPages;  // 获取PDF的总页数
+                                                      var pdfContainer = document.getElementById('pdfContainer');
+
+                                                      // 遍历每一页，创建并渲染canvas
+                                                      for (var pageNum = 1; pageNum <= numPages; pageNum++) {
+                                                        pdf.getPage(pageNum).then(function(page) {
+                                                          var canvas = document.createElement('canvas');
+                                                          var context = canvas.getContext('2d');
+                                                          var viewport = page.getViewport({ scale: 1.5 });
+                                                          canvas.width = viewport.width;
+                                                          canvas.height = viewport.height;
+
+                                                          // 将canvas添加到页面中的容器
+                                                          pdfContainer.appendChild(canvas);
+
+                                                          // 渲染当前页到canvas
+                                                          page.render({
+                                                            canvasContext: context,
+                                                            viewport: viewport
+                                                          });
+                                                        });
+                                                      }
+                                                    });
+                                                    */
+                                                        // 将 PDF 文件的二进制数据转换为可加载的 URL
+                                                    function createObjectURL(data) {
+                                                      var blob = new Blob([data], { type: 'application/pdf' });
+                                                      return URL.createObjectURL(blob);
+                                                    }
+
+                                                    // 在指定的容器中嵌入 PDF 文件
+                                                    var options = {
+                                                      fallbackLink: '<p>This browser does not support PDFs. <a href="#">Download the PDF</a> to view it.</p>'
+                                                    };
+
+                                                    // 假设你从后端获取到了 PDF 文件的二进制数据，存储在变量 binaryData 中
+                                                    // 使用 createObjectURL 方法将二进制数据转换为可加载的 URL
+                                                    var binaryData = "{{ item.noticeFile }}"; // 替换为实际的 PDF 文件的二进制数据
+                                                    var pdfURL = createObjectURL(binaryData);
+                                                    pdfURL = "/statics/temp/{{ item.noticeName }}.pdf"
+                                                    {#pdfURL = "{{ task.taskDescriptionPath }}"#}
+                                                    // 嵌入 PDF 文件
+                                                    console.log(pdfURL)
+                                                    PDFObject.embed(pdfURL, '#pdfContainer', options);
+                                                </script>
+                                              </div>
+                                            </div>
+
+                                                <td class="public">{{ item.public }}</td>
+                                                <td class="noticeDate">{{ item.noticeDate }}</td>
+                                                <td>
+                                                    <a class="text-decoration-none text-white" href="notice_delete?nId={{ item.nId }}"><button class="btn btn-google">删除</button></a>
+                                                    <button class="btn btn-warning change" id="{{ item.nId }}" data-bs-toggle="modal" data-bs-target="#myModal">修改</button>
+                                                </td>
+                                            </tr>
+                                            <div class="modal fade" id="myModal">
+                                                <div class="modal-dialog align-content-center">
+                                                  <div class="modal-content" style="width: 120%">
+
+                                                  <!-- 模态框头部 -->
+                                                  <div class="modal-header">
+                                                    <h4 class="modal-title">公告信息修改</h4>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                  </div>
+
+                                                  <!-- 模态框内容 -->
+                                                  <div class="modal-body">
+                                                       <form action="notice_update" method="post" enctype="multipart/form-data">
+                                                            {% csrf_token %}
+                                                            <div class="row">
+                                                                <div class="col-md-12 grid-margin stretch-card">
+                                                                    <div class="card">
+                                                                        <div class="card-body" id="new_notice">
+                                                                            <div class="mb-3 mt-3">
+    {#                                                                                <input type="text" class="visually-hidden" name="taskId" value="{{ task.taskId }}">#}
+                                                                                <label for="text" class="form-label">公告ID</label>
+                                                                                <input type="text" class="form-control" name="nId" readonly placeholder="" value="{{ item.nId }}">
+{#                                                                                <input type="text" class="form-control visually-hidden" name="staffId" placeholder="" value="{{ item.staffId }}">#}
+                                                                            </div>
+                                                                            <div class="mb-3 mt-3">
+    {#                                                                                <input type="text" class="visually-hidden" name="taskId" value="{{ task.taskId }}">#}
+                                                                                <label for="text" class="form-label">公告标题</label>
+                                                                                <input type="text" class="form-control" name="new_noticeName" placeholder="请输入员工名称" value="{{ item.noticeName }}">
+                                                                            </div>
+                                                                            <div class="mb-3">
+                                                                                <label for="text" class="form-label">公告文件</label>
+                                                                                <input type="file" class="form-control" name="new_noticeFile" placeholder="请输入员工邮箱" value="公告文件">
+                                                                            </div>
+                                                                            <div class="mb-3 mt-3">
+                                                                                <label for="text" class="form-label">是否公布</label><br>
+                                                                                <select name="new_public" id="" class="form-select form-control" data-value="{{ item.public }}">
+                                                                                    <option value="{{ item.public }}">{{ item.public }}</option>
+                                                                                    <option value="1">公布</option>
+                                                                                    <option value="0">不公布</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                           <!-- 模态框底部 -->
+                                                           <div class="modal-footer">
+                                                               <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">提交</button>
+                                                           </div>
+                                                       </form>
+                                                  </div>
+
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {% endfor %}
+                                        <script>
+                                            const btns = document.getElementsByClassName("change")
+                                            for (var i = 0; i < btns.length; i++){
+                                                (function(index) {
+                                                    console.log()
+                                                    btns[index].onclick = function () {
+                                                        console.log("正在修改", this.id)
+                                                        var parent = this.parentNode.parentNode
+                                                        var staffId = parent.getElementsByClassName('nId')[0].textContent;
+                                                        var new_staff = document.getElementById("new_notice")
+                                                        var new_staffId = new_staff.querySelector("[name='nId']")
+                                                        new_staffId.value = staffId
+                                                        console.log(parent)
+                                                        var new_noticeName = new_staff.querySelector("[name='new_noticeName']")
+                                                        new_noticeName.value = parent.getElementsByClassName('noticeName')[0].textContent;
+                                                        var new_public = new_staff.querySelector("[name='new_public']")
+                                                        new_public.value = parent.getElementsByClassName('public')[0].textContent;
+                                                    }
+                                                })(i)
+                                            }
+                                        </script>
+                                    </tbody>
+                                  </table>
+                                  <script>
+                                      let ths = document.getElementsByTagName('th')
+                                      $(ths).addClass('text-center')
+                                      let tds = document.getElementsByTagName('td')
+                                      $(tds).addClass('text-center')
+                                  </script>
+                                  <nav class="float-end mt-2" id="pager" aria-label="Page navigation">
+
+                                      <ul class="pagination">
+                                        <li class="page-item"><a class="page-link" href="#">上一页</a></li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                      </ul>
+
+                                  </nav>
+                              </div>
+                              <div class="visually-hidden" id="staff-add">
+                                  <nav class="mb-5">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-fill" viewBox="0 0 16 16">
+                                          <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                                          <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"/>
+                                      </svg>&ensp;
+                                      <a class="text-decoration-none" id="staff-list">公告列表</a>>添加公告
+                                  </nav>
+                                  <form action="" method="post" enctype="multipart/form-data">
+                                      {% csrf_token %}
+                                      <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text h-100">公告名称：</span>
+                                        </div>
+                                        <input type="text" placeholder="请输入公告名称" class="form-control" name="noticeName">
+                                      </div>
+                                      <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text h-100">公告内容：</span>
+                                        </div>
+                                        <input type="text" placeholder="请输入公告内容" class="form-control" name="noticeContent">
+                                      </div>
+                                      <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text h-100">公告文件（PDF文件）：</span>
+                                        </div>
+                                        <input type="file" placeholder="请上传公告文件（非必须）" class="form-control" name="noticeFile">
+                                      </div>
+                                      <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text h-100">是否公开：</span>
+                                        </div>
+                                        <select name="staffType" class="form-select">
+                                            <option value="1">公开</option>
+                                            <option value="0">不公开</option>
+                                        </select>
+                                      </div>
+                                      <button class="btn btn-success">添加公告</button>
+                                  </form>
+                              </div>
+                              <script>
+                                  const btn = document.getElementById('staff-add-btn')
+                                  const return_btn = document.getElementById('staff-list')
+                                  const staff = document.getElementById('staff')
+                                  const staff_add = document.getElementById('staff-add')
+                                  btn.onclick = function(){
+                                      $(staff).addClass("visually-hidden")
+                                      $(staff_add).removeClass("visually-hidden")
+                                  }
+                                  return_btn.onclick = function() {
+                                      console.log('1')
+                                      $(staff).removeClass("visually-hidden")
+                                      $(staff_add).addClass("visually-hidden")
+                                  }
+                              </script>
+
+                          </div>
+                        </div>
+                      </div>
+                </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="container-fluid d-flex justify-content-between">
+              <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com 2021</span>
+              <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- partial -->
+        {% endblock %}
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    {% block script %}
+        {{ block.super }}
+    {% endblock %}
+</body>
+</html>

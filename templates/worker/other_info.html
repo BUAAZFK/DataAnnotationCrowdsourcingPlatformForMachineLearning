@@ -1,0 +1,223 @@
+{#<!doctype html>#}
+{% extends "worker/base.html" %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% block links %}
+        {{ block.super }}
+        <title>任务发布者信息</title>
+    {% endblock %}
+</head>
+<body>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      {% block navbar %}
+          {{ block.super }}
+      {% endblock %}
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        {% block sidebar %}
+            {{ block.super }}
+            <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-home"></i>
+                    </span> 个人信息
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="border-bottom text-center pb-4">
+                                            <img src="/statics/images/faces/face1.jpg" alt="" class="img-lg rounded-circle mb-3">
+                                            <p>{{ user.name }}</p>
+                                            <div class="d-flex justify-content-between"></div>
+                                        </div>
+                                        <div class="border-bottom py-4">
+                                            <p>Skills</p>
+                                            <div>
+                                                <label class="badge badge-outline-dark">文本标注</label>
+                                                <label class="badge badge-outline-dark">情感标注</label>
+                                                <label class="badge badge-outline-dark">图片标注</label>
+                                                <label class="badge badge-outline-dark">视频标注</label>
+                                            </div>
+                                        </div>
+{% comment %}                                        <div class="border-bottom py-4">
+
+                                        </div>{% endcomment %}
+                                        <div class="py-4">
+                                            <p class="clearfix">
+                                                <span class="float-left">Status</span>
+                                                <span class="float-right text-muted" style="float: right;">Active</span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">Phone</span>
+                                                <span class="float-right text-muted" style="float: right;">{{ user.phone }}</span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">Mail</span>
+                                                <span class="float-right text-muted"  style="float: right;">{{ user.email }}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+{% comment %}                                    <div class="col-lg-8">
+                                        <div class="row">
+                                          <div class="col-md-4 stretch-card grid-margin">
+                                            <div class="card bg-gradient-danger card-img-holder text-white">
+                                              <div class="card-body">
+                                                <img src="/statics/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                                                <h4 class="font-weight-normal mb-3">已接受任务&ensp;<i class="mdi mdi-chart-line mdi-24px float-right"></i>
+                                                </h4>
+                                                <h2 class="mb-5">15,0000</h2>
+                                                <h6 class="card-text">150 有效</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="col-md-4 stretch-card grid-margin">
+                                            <div class="card bg-gradient-info card-img-holder text-white">
+                                              <div class="card-body">
+                                                <img src="/statics/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                                                <h4 class="font-weight-normal mb-3">已完成任务&ensp;<i class="mdi mdi-bookmark-outline mdi-24px float-right"></i>
+                                                </h4>
+                                                <h2 class="mb-5">45,6334</h2>
+                                                <h6 class="card-text">160 已审核</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="col-md-4 stretch-card grid-margin">
+                                            <div class="card bg-gradient-success card-img-holder text-white">
+                                              <div class="card-body">
+                                                <img src="/statics/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                                                <h4 class="font-weight-normal mb-3">审核中任务&ensp;<i class="mdi mdi-diamond mdi-24px float-right"></i>
+                                                </h4>
+                                                <h2 class="mb-5">50000</h2>
+                                                <h6 class="card-text">150 审核完成</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div class="row">
+                                          <div class="col-md-5 grid-margin stretch-card">
+                                            <div class="card">
+                                              <div class="card-body">
+                                                <h4 class="card-title">已完成不同类型任务占比</h4>
+{#                                                <canvas id="traffic-chart"></canvas>#}
+                                                <div id="traffic-chart-legend" class="rounded-legend legend-vertical legend-bottom-left pt-4"></div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="col-md-7 stretch-card grid-margin">
+                                            <div class="card bg-gradient-danger card-img-holder text-white">
+                                              <div class="card-body">
+                                                <img src="/statics/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                                                <h4 class="font-weight-normal mb-3">评分&ensp;<i class="mdi mdi-chart-line mdi-24px float-right"></i>
+                                                </h4>
+                                                  <div class="table-responsive">
+                                                    <table class="table" style="border-width: 0;color: white">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="width: 20px;">5星</td>
+                                                                <td>
+                                                                    <div class="progress">
+                                                                      <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 120px" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    35%
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width: 20px;">4星</td>
+                                                                <td>
+                                                                    <div class="progress">
+                                                                      <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 120px" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    25%
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width: 20px;">3星</td>
+                                                                <td>
+                                                                    <div class="progress">
+                                                                      <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 120px" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    15%
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width: 20px;">2星</td>
+                                                                <td>
+                                                                    <div class="progress">
+                                                                      <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 120px" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    15%
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width: 20px;">1星</td>
+                                                                <td>
+                                                                    <div class="progress">
+                                                                      <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 120px" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    10%
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                  </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                    </div>{% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="container-fluid d-flex justify-content-between">
+              <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com 2021</span>
+              <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- partial -->
+        {% endblock %}
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    {% block script %}
+        {{ block.super }}
+    {% endblock %}
+</body>
+</html>

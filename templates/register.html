@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>数据标注众包平台</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="/statics/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/statics/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="/statics/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="/statics/images/favicon.ico" />
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="content-wrapper d-flex align-items-center auth">
+          <div class="row flex-grow">
+            <div class="col-lg-4 mx-auto">
+              <div class="auth-form-light text-left p-4 rounded-3 w-100">
+                <h4 class="text-center mt-3  mb-4 align-content-center justify-content-center">
+                    数据标注众包平台
+                </h4>
+                  <div class="border-bottom"></div>
+{#                <h6 class="font-weight-light">Signing up is easy. It only takes a few steps</h6>#}
+                <form class="pt-3" action="/register" method="post">
+                    {% csrf_token %}
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Username" name="name">
+                  </div>
+                  <div class="form-group">
+                    <input type="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Email" name="email">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Phone" name="phone">
+                  </div>
+                  <div class="form-group">
+                    <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" name="password">
+                  </div>
+                  <div class="input-group form-group">
+{#                    <label for="name"></label>#}
+                        <div class="input-group-prepend">
+                            <span class="input-group-text h-100">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                              </svg>
+                            </span>
+                        </div>
+                        <select class="form-control form-control-lg" name="type">
+                          <option value="">用户类型选择</option>
+                          <option value="任务发布者">任务发布者</option>
+                          <option value="任务接受者">任务接受者</option>
+                        </select>
+                  </div>
+                  <div class="mb-4">
+                    <div class="form-check">
+                      <label class="form-check-label text-muted">
+                        <input type="checkbox" class="form-check-input"> I agree to all Terms & Conditions </label>
+                    </div>
+                  </div>
+                  <div class="mt-3 text-center">
+{#                    <a class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" href="../../index.html">SIGN UP</a>#}
+                      <button class="btn btn-block btn-behance btn-lg font-weight-medium auth-form-btn w-100" type="submit">提交</button>
+                  </div>
+                  <div class="text-center mt-4 font-weight-light"><a href="/login" class="text-primary">登录</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="/statics/vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="/statics/js/off-canvas.js"></script>
+    <script src="/statics/js/hoverable-collapse.js"></script>
+    <script src="/statics/js/misc.js"></script>
+    <!-- endinject -->
+  </body>
+</html>

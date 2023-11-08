@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+{% extends "creator/base.html" %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% block links %}
+        {{ block.super }}
+        <title>主页</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      {% block navbar %}
+        {{ block.super }}
+      {% endblock %}
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        {% block sidebar %}
+            {{ block.super }}
+            <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-home"></i>
+                    </span> 主页
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+            <div class="row">
+              <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">最新被接受任务</h4>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th> 任务项目ID </th>
+                            <th> 任务项目名称 </th>
+                            <th> 任务接受者 </th>
+                            <th> 任务接受时间 </th>
+                              <th>任务状态</th>
+                            <th> 任务进度 </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in tasks %}
+                          <tr>
+                            <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId_id }}">{{ item.taskId_id }} </a> </td>
+                            <td><a href="/creator/{{ name }}/task_info?taskId={{ item.taskId_id }}" class="nav-link">{{ item.taskName }} </a></td>
+                            <td><a class="nav-link" href="/creator/{{ name }}/other_info?type=worker&Id={{ item.wId_id }}"> {{ item.workerName }} </a></td>
+                            <td> {{ item.acceptTime }} </td>
+                              <td>{{ item.get_status_display }}</td>
+                            <td>
+                              <div class="progress align-items-center" style="height: 1.2rem">
+                                <div class="progress-bar bg-gradient-success h-100 text-dark" role="progressbar" style="width: {{ item.progress }}%" aria-valuenow="{{ item.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                              {{ item.progress }}%
+                              </div>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-12 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">最新任务相关评论</h4>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th> 评论者 </th>
+                            <th> 评论内容 </th>
+                            <th> 评论项目 </th>
+                            <th> 项目状态 </th>
+                            <th> 评论时间 </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for comment in comments %}
+                          <tr>
+                            <td>
+                              <img src="/statics/images/faces/face1.jpg" class="me-2" alt="image">{{ comment.name }}
+                            </td>
+                            <td>{{ comment.content }}</td>
+                            <td>{{ comment.taskName }}</td>
+                            <td>
+                              <label class="badge badge-gradient-success">{{ comment.taskStatus }}</label>
+                            </td>
+                            <td>{{ comment.cmTime }}</td>
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+{#            <div class="row">#}
+{#              <div class="col-12 grid-margin stretch-card">#}
+{#                <div class="card">#}
+{#                  <div class="card-body">#}
+{#                    <h4 class="card-title">Recent Updates</h4>#}
+{#                    <div class="d-flex">#}
+{#                      <div class="d-flex align-items-center me-4 text-muted font-weight-light">#}
+{#                        <i class="mdi mdi-account-outline icon-sm me-2"></i>#}
+{#                        <span>jack Menqu</span>#}
+{#                      </div>#}
+{#                      <div class="d-flex align-items-center text-muted font-weight-light">#}
+{#                        <i class="mdi mdi-clock icon-sm me-2"></i>#}
+{#                        <span>October 3rd, 2018</span>#}
+{#                      </div>#}
+{#                    </div>#}
+{#                    <div class="row mt-3">#}
+{#                      <div class="col-6 pe-1">#}
+{#                        <img src="/statics/images/dashboard/img_1.jpg" class="mb-2 mw-100 w-100 rounded" alt="image">#}
+{#                        <img src="/statics/images/dashboard/img_4.jpg" class="mw-100 w-100 rounded" alt="image">#}
+{#                      </div>#}
+{#                      <div class="col-6 ps-1">#}
+{#                        <img src="/statics/images/dashboard/img_2.jpg" class="mb-2 mw-100 w-100 rounded" alt="image">#}
+{#                        <img src="/statics/images/dashboard/img_3.jpg" class="mw-100 w-100 rounded" alt="image">#}
+{#                      </div>#}
+{#                    </div>#}
+{#                    <div class="d-flex mt-5 align-items-top">#}
+{#                      <img src="/statics/images/faces/face3.jpg" class="img-sm rounded-circle me-3" alt="image">#}
+{#                      <div class="mb-0 flex-grow">#}
+{#                        <h5 class="me-2 mb-2">School Website - Authentication Module.</h5>#}
+{#                        <p class="mb-0 font-weight-light">It is a long established fact that a reader will be distracted by the readable content of a page.</p>#}
+{#                      </div>#}
+{#                      <div class="ms-auto">#}
+{#                        <i class="mdi mdi-heart-outline text-muted"></i>#}
+{#                      </div>#}
+{#                    </div>#}
+{#                  </div>#}
+{#                </div>#}
+{#              </div>#}
+{#            </div>#}
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="container-fluid d-flex justify-content-between">
+              <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com 2021</span>
+              <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        {% endblock %}
+        <!-- partial -->
+
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    {% block script %}
+        {{ block.super }}
+    {% endblock %}
+    <!-- End custom js for this page -->
+  </body>
+</html>

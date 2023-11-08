@@ -1,0 +1,97 @@
+{% extends 'worker/base.html' %}
+{% block links %}
+    {{ block.super }}
+    <title>申诉</title>
+{% endblock %}
+<body>
+    {% block sidebar %}
+        {{ block.super }}
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-home"></i>
+                    </span> 申诉
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+                <form action="problem_create" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+{#                                    <h4 class="card-title">申诉类型</h4>#}
+                                    <div class="mb-3 mt-3">
+                                        <label for="text" class="form-label">申诉类型</label>
+                                        <select name="type" id="" class="form-select form-control">
+{#                                            <option value="">申诉类型选择</option>#}
+                                            <option value="taskResult">任务审核结果申诉</option>
+                                            <option value="taskReward">任务奖励发放申诉</option>
+                                            <option value="account">个人账户信息申诉</option>
+                                            <option value="labelSystem">标注系统异常申诉</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="text" class="form-label">申诉内容</label>
+                                        <textarea type="text" rows="5" class="form-control" name="pContent"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="mb-3 mt-3">
+                                        <label for="text" class="form-label">申诉任务选择</label>
+                                        <select name="taskId" id="" class="form-select form-control">
+                                            {% for task in acceptTasks %}
+                                                <option value="{{ task.taskId_id }}">{{ task.taskId_id }}-{{ task.taskName }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="mb-3 mt-3">
+                                        <label for="text" class="form-label">申诉依据</label>
+                                        <textarea type="text" rows="5" class="form-control" name="taskContent"></textarea>
+                                    </div>
+                                    <div class="mt-3 mb-3">
+                                        <label for="" class="form-label">申诉凭证</label>
+                                        <input type="text" name="taskReward" class="form-control" placeholder="请上传凭证">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                      <span class="nav-link">
+                        <div class="border-bottom">
+        {#                  <h6 class="font-weight-normal mb-3">Projects</h6>#}
+                        </div>
+                        <a href="/creator/{{ name }}/problem_create">
+                        <button class="btn btn-block btn-lg btn-gradient-primary mt-4"> 提交申诉 </button>
+                        </a>
+                      </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endblock %}
+
+</body>

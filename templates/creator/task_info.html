@@ -1,0 +1,633 @@
+{#<!doctype html>#}
+{% extends "creator/base.html" %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% block links %}
+        {{ block.super }}
+{#        <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>#}
+        <script type="text/javascript" src="/statics/js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="/statics/js/bootstrap.min.js"></script>
+        <script src="/statics/js/jquery.min.js"></script>
+        <link rel="stylesheet" href="/statics/css/flatpickr.min.css">
+        <script src="/statics/js/flatpickr.js"></script>
+        <!-- 引入 PDF.js 样式文件 -->
+{#        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.css">#}
+        <!-- 引入 PDF.js 脚本文件 -->
+        <script src="/statics/js/pdfobject.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+        <title>任务详细页</title>
+    {% endblock %}
+</head>
+<body>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      {% block navbar %}
+          {{ block.super }}
+      {% endblock %}
+
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        {% block sidebar %}
+            {{ block.super }}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                <div class="page-header">
+                  <h3 class="page-title">
+                      <a href="/creator/{{ name }}/task_list" data-toggle="tooltip" data-placement="top" title="返回全部任务列表">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                          <i class="mdi mdi-home"></i>
+                        </span>
+                      </a>
+                      <script>
+                        $(function () { $("[data-toggle='tooltip']").tooltip(); });
+                      </script>
+                  </h3>
+                  <div class="container">
+                      <ul class="nav nav-pills" id="loc-nav">
+                        <li class="nav-item bg-white"><a href="#" class="nav-link active" id="section1-link">任务详细页</a></li>
+                        <li class="nav-item bg-white"><a href="#" class="nav-link" id="section2-link">任务需求</a></li>
+                        <li class="nav-item bg-white"><a href="#" class="nav-link" id="section3-link">试标注审核</a></li>
+                        <li class="nav-item bg-white"><a href="#" class="nav-link" id="section4-link">标注审核</a></li>
+                        <li class="nav-item bg-white"><a href="#" class="nav-link" id="section5-link">使用说明</a></li>
+                      </ul>
+                      <script>
+                        //给当前元素设置新的样式，并删除当前元素的同胞元素的样式
+                         $('#loc-nav').find('a').each(function () {
+                                $(this).click(function () {
+                                    $(this).parent().siblings().find('a').removeClass("active")
+                                    $(this).addClass('active')
+                                    // 调整页面显示内容
+                                    const s = this.id.slice(0, 8)
+                                    console.log(s)
+                                    const section = document.getElementById(s)
+                                    const sections = document.getElementsByClassName('mysection')
+                                    for (each of sections){
+                                        $(each).addClass('visually-hidden')
+                                    }
+                                    $(section).removeClass('visually-hidden')
+                                    section.style.display='block';
+                                    // 或者写成一句
+                                    //$(this).parent().addClass('active').siblings().removeClass("active")
+                                })
+                            })
+                      </script>
+                  </div>
+                </div>
+                <div class="row mysection" id="section1">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                {% if task.checkResult == 'pass' or task.status == 'unAccept' %}
+                                <div class="row mb-4">
+                                    <div class="alert alert-warning">
+                                        <strong>发布审核反馈</strong>
+                                        已通过审核并成功发布！
+                                    </div>
+                                </div>
+                                {% elif task.checkResult == 'unpass' %}
+                                <div class="row mb-4">
+                                    <div class="alert alert-danger">
+                                        <strong>发布审核反馈</strong>
+                                        未通过发布任务审核！
+                                        </br>
+                                        </br>
+                                        反馈内容：
+                                        {{ task.feedBack }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if task.status == 'labeling' %}
+                                <div class="row mb-4">
+                                    <div class="alert alert-warning">
+                                        <strong>任务已经被接受，正在标注中！</strong>
+                                    </div>
+                                </div>
+                                {% elif task.status == 'checking' %}
+                                <div class="row mb-4">
+                                    <div class="alert alert-secondary">
+                                        <strong>任务审核提示</strong>
+                                        任务标注结果已提交！请及时审核！
+                                    </div>
+                                </div>
+                                {% elif task.status == 'over' %}
+                                <div class="row mb-4">
+                                    <div class="alert alert-secondary">
+                                        <strong>标注结果下载</strong>
+                                        任务已完成！请下载标注结果！
+                                        <a class="text-decoration-none" href="/creator/{{ name }}/{{ task.taskId }}/labelResultDownload">
+                                            <button class="btn btn-success">
+                                                下载标注结果
+                                            </button>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="border-bottom text-center pb-4">
+                                            <h4 class="card-title">{{ task.taskName }}</h4>
+                                            <p>{{ task.taskContent }}</p>
+                                            <div class="d-flex justify-content-between"></div>
+                                        </div>
+                                        <div class="border-bottom py-4">
+                                            <p>任务类型</p>
+                                            <div>
+                                                <label class="badge badge-outline-dark">文本标注</label>
+                                                <label class="badge badge-outline-dark">情感标注</label>
+                                                <label class="badge badge-outline-dark">图片标注</label>
+                                                <label class="badge badge-outline-dark">视频标注</label>
+                                            </div>
+                                        </div>
+                                        <div class="py-4">
+                                            <p class="clearfix">
+                                                <span class="float-left">任务创建者</span>
+                                                <span class="float-right text-muted" style="float: right;"><a class="" href="/creator/{{ name }}/other_info?type=creator&Id={{ task.CreatorID_id }}">{{ task.cId_id }}</a></span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">任务创建时间</span>
+                                                <span class="float-right text-muted" style="float: right;">{{ task.createTime }}</span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">任务进展</span>
+                                                <span class="float-right text-muted"  style="float: right;">{{ task.progress }}</span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">任务状态</span>
+                                                <span class="float-right text-muted"  style="float: right;">{{ task.get_status_display }}</span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">任务接受时间</span>
+                                                {% if task.acceptTime %}
+                                                    <span class="float-right text-muted"  style="float: right;">{{ task.acceptTime }}</span>
+                                                {% elif not task.acceptTime %}
+                                                    <span class="float-right text-muted"  style="float: right;">尚未被接受</span>
+                                                {% endif %}
+
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">任务截止时间</span>
+                                                <span class="float-right text-muted"  style="float: right;">{{ task.taskLimit }}</span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">数据集大小</span>
+                                                <span class="float-right text-muted"  style="float: right;">{{ data.size }}</span>
+                                            </p>
+                                            <p class="clearfix">
+                                                <span class="float-left">任务报酬</span>
+                                                <span class="float-right text-muted"  style="float: right;">{{ task.reward}}</span>
+                                            </p>
+                                            <div class="text-center">
+                                                <span class="text-center">
+                                                    {% if task.status != 'labeling' and task.status != 'checking' and task.status != 'over' %}
+                                                        <button class="btn btn-block btn-sm btn-warning mt-3" style="float: left" data-bs-toggle="modal" data-bs-target="#myModal"> 任务内容修改 </button>
+                                                    {% endif %}
+                                                    &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;
+                                                    {% if task.status != 'labeling' and task.status != 'checking' and task.status != 'over' %}
+                                                     <a href="/creator/{{ name }}/{{ task.taskId }}/task_update?taskId={{ task.taskId }}&delete=True">
+                                                        <button class="btn btn-google btn-sm mt-3" onclick="dtask(event)" style="float: right" id="delete"> 删除任务 </button>
+                                                         <script>
+                                                             let btn = document.getElementById('delete');
+                                                             function dtask(event){
+                                                                 console.log(event);
+                                                                 let result = confirm('是否确认删除？');
+                                                                 if (!result){
+                                                                    event.preventDefault();
+                                                                 }
+                                                             }
+                                                         </script>
+                                                    </a>
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        <!-- 模态框 -->
+                                            <div class="modal fade" id="myModal">
+                                              <div class="modal-dialog align-content-center">
+                                                <div class="modal-content" style="width: 120%">
+
+                                                  <!-- 模态框头部 -->
+                                                  <div class="modal-header">
+                                                    <h4 class="modal-title">任务内容修改</h4>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                  </div>
+
+                                                  <!-- 模态框内容 -->
+                                                  <div class="modal-body">
+                                                       <form action="/creator/{{ name }}/task_update" method="post" enctype="multipart/form-data">
+                                                            {% csrf_token %}
+                                                            <input class="visually-hidden" name="taskId" type="text" value="{{ task.taskId }}">
+                                                            <div class="row">
+                                                                <div class="col-md-12 grid-margin stretch-card">
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+                                                                            <div class="mb-3 mt-3">
+{#                                                                                <input type="text" class="visually-hidden" name="taskId" value="{{ task.taskId }}">#}
+                                                                                <label for="text" class="form-label">任务名称</label>
+                                                                                <input type="text" class="form-control" name="taskName" placeholder="请输入任务名称" value="{{ task.taskName }}">
+                                                                            </div>
+                                                                            <div class="mb-3">
+                                                                                <label for="text" class="form-label">任务内容</label>
+                                                                                <textarea type="text" rows="5" class="form-control" name="taskContent" placeholder="请输入关于任务的具体内容，包括标注类型，结果要求，结果文件的格式等">{{ task.taskContent }}</textarea>
+                                                                            </div>
+                                                                            <div class="mb-3 mt-3">
+                                                                                <label for="text" class="form-label">任务类型选择</label><br>
+                                                                                <select name="taskType" id="" class="form-select form-control" data-value="{{ task.get_taskType_display }}">
+                                                                                    <option value="{{ task.taskType }}">{{ task.get_taskType_display }}</option>
+                                                                                    <option value="0">文本清洗</option>
+                                                                                    <option value="1">情感标注</option>
+                                                                                    <option value="2">文本分类</option>
+                                                                                    <option value="3">语义分割</option>
+                                                                                    <option value="4">图片分类</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="mb-3 mt-3">
+                                                                                <label for="text" class="form-label">任务限制时间</label>
+                                                                                <input type="text" name="taskLimit" id="datetimepicker" class="form-control form-select" placeholder="选择截止时间" value="{{ task.taskLimit }}">
+                                                                                <script>
+                                                                                    document.addEventListener("DOMContentLoaded", function() {
+                                                                                      flatpickr("#datetimepicker", {
+                                                                                        enableTime: true, // 启用时间选择
+                                                                                        dateFormat: "Y-m-d H:i", // 设置日期和时间格式
+                                                                                        time_24hr: true, // 使用24小时制
+                                                                                        onClose: function(selectedDates, dateStr, instance) {
+                                                                                          // 关闭日期时间选择器后执行的回调函数
+                                                                                          console.log(dateStr); // 在控制台打印选中的日期时间
+                                                                                        }
+                                                                                      });
+                                                                                    });
+                                                                                </script>
+
+                                                                            </div>
+                                                                            <div class="mb-3 mt-3">
+                                                                                <label for="text" class="form-label">任务报酬类型选择</label>
+                                                                                <select name="taskReward" id="" class="form-select form-control">
+                                                                                    <option value=""></option>
+                                                                                    <option value="总包">总包</option>
+                                                                                    <option value="按条">按条</option>
+                                                                                    <option value="按批">按批</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="mt-3 mb-3">
+                                                                                <label for="" class="form-label">任务报酬设置</label>
+                                                                                <input type="text" name="taskReward" class="form-control" placeholder="请输入报酬" value="{{ task.reward }}">
+                                                                            </div>
+                                                                            <div class="mt-3 mb-3">
+                                                                                <label for="" class="form-label">数据描述</label>
+                                                                                <textarea type="text" name="description" class="form-control" placeholder="请输入关于数据的描述，包括数据的整体内容、数据格式、数据量等">{{ datas.1.description }}</textarea>
+                                                                            </div>
+                                                                            <div class="mt-3 mb-3">
+                                                                                <label for="" class="form-label">数据链接</label>
+                                                                                <input type="url" name="dLink" class="form-control" placeholder="请输入关于数据的链接，点击直接可以下载zip文件" value="{{ data.1.dLink }}">
+                                                                            </div>
+                                                                            <div class="file-loading">
+                                                                                 <input id="singleFile" name="file" type="file" placeholder="" value="{{ data.dFile }}" data-bs-toggle="tooltip" data-bs-placement="left" title="重新上传将覆盖已上传数据!">
+                                                                                <div class="alert alert-warning">
+                                                                                    <strong>提示!</strong> 重新上传将覆盖已上传数据
+                                                                                </div>
+                                                                                <p>数据格式要求：上传.zip文件，根目录下为数据文件（图片或Excel文件等）。</p>
+                                                                                <script>
+                                                                                    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                                                                                    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                                                                                      return new bootstrap.Tooltip(tooltipTriggerEl)
+                                                                                    })
+                                                                                </script>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                          <!-- 模态框底部 -->
+                                                          <div class="modal-footer">
+                                                              {% if task.status == "unpass" %}
+                                                                <button type="submit" class="btn btn-behance" data-bs-dismiss="modal" value="changeAndSubmit" name="action">保存修改并重新提交审核</button>
+                                                              {% endif %}
+                                                            <button type="submit" class="btn btn-danger" data-bs-dismiss="modal" value="onlyChange" name="action">保存修改</button>
+                                                          </div>
+                                                       </form>
+                                                  </div>
+
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-8">
+                                        <div class="border-bottom text-center pb-4">
+                                            <h4 class="card-title">数据集介绍</h4>
+                                            <p>{{ data.description }}</p>
+                                            <div class="d-flex justify-content-between">
+
+                                            </div>
+                                        </div>
+                                        <div class="border-bottom py-4">
+                                            <p>数据集类型</p>
+                                            <div>
+                                                <label class="badge badge-outline-dark">.csv文件</label>
+                                                <label class="badge badge-outline-dark">.jpg文件</label>
+                                                <label class="badge badge-outline-dark">.MP4文件</label>
+                                            </div>
+                                        </div>
+                                        <div class="border-bottom py-4">
+                                                <p>数据集预览</p>
+                                                {% if origin_datas.0.dType == 'word' %}
+                                                    <div style="overflow: scroll; height: 300px">
+                                                    <table class="table table-striped">
+                                                        <tbody>
+                                                            {% for data in datas %}
+                                                                <tr>
+                                                                {% for item in data %}
+                                                                    <td>{{ item }}</td>
+                                                                {% endfor %}
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                {% endif %}
+                                                {% if origin_datas.0.dType == 'pic' %}
+                                                    <div id="demo" class="carousel slide" data-bs-ride="carousel">
+
+                                                       <!-- 指示符 -->
+                                                      <div class="carousel-indicators">
+                                                        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+                                                        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+                                                        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+                                                        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
+                                                        <button type="button" data-bs-target="#demo" data-bs-slide-to="4"></button>
+                                                      </div>
+
+                                                      <!-- 轮播图片 -->
+                                                      <div class="carousel-inner bg-dark">
+                                                        <div class="carousel-item active text-center">
+                                                          <img src="data:data;base64, {{ datas.1 }}" style="height: 300px">
+                                                        </div>
+                                                          {% for data in datas %}
+                                                            <div class="carousel-item text-center">
+                                                              <img src="data:data;base64, {{ data }}" style="height: 300px">
+                                                            </div>
+                                                          {% endfor %}
+                                                      </div>
+
+                                                      <!-- 左右切换按钮 -->
+                                                      <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                                                        <span class="carousel-control-prev-icon"></span>
+                                                      </button>
+                                                      <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                                                        <span class="carousel-control-next-icon"></span>
+                                                      </button>
+                                                    </div>
+                                                {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3 visually-hidden mysection" id="section2">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="pdfContainer" class="border-2" style="margin-top: 0px;height: 900px;"></div>
+                                <script>
+
+                                    const pdfdata = "{{ task.taskDescription }}"; // 替换为实际的PDF文件路径
+                                    /*
+                                    var url = "/statics/images/test任务需求.pdf"
+                                    {#const loadingTask = pdfjsLib.getDocument({data: pdfdata});#}
+                                    const loadingTask = pdfjsLib.getDocument(url)
+                                    pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                                      var numPages = pdf.numPages;  // 获取PDF的总页数
+                                      var pdfContainer = document.getElementById('pdfContainer');
+
+                                      // 遍历每一页，创建并渲染canvas
+                                      for (var pageNum = 1; pageNum <= numPages; pageNum++) {
+                                        pdf.getPage(pageNum).then(function(page) {
+                                          var canvas = document.createElement('canvas');
+                                          var context = canvas.getContext('2d');
+                                          var viewport = page.getViewport({ scale: 1.5 });
+                                          canvas.width = viewport.width;
+                                          canvas.height = viewport.height;
+
+                                          // 将canvas添加到页面中的容器
+                                          pdfContainer.appendChild(canvas);
+
+                                          // 渲染当前页到canvas
+                                          page.render({
+                                            canvasContext: context,
+                                            viewport: viewport
+                                          });
+                                        });
+                                      }
+                                    });
+                                    */
+                                        // 将 PDF 文件的二进制数据转换为可加载的 URL
+                                    function createObjectURL(data) {
+                                      var blob = new Blob([data], { type: 'application/pdf' });
+                                      return URL.createObjectURL(blob);
+                                    }
+
+                                    // 在指定的容器中嵌入 PDF 文件
+                                    var options = {
+                                      fallbackLink: '<p>This browser does not support PDFs. <a href="#">Download the PDF</a> to view it.</p>'
+                                    };
+
+                                    // 假设你从后端获取到了 PDF 文件的二进制数据，存储在变量 binaryData 中
+                                    // 使用 createObjectURL 方法将二进制数据转换为可加载的 URL
+                                    var binaryData = "{{ task.taskDescription }}"; // 替换为实际的 PDF 文件的二进制数据
+                                    var pdfURL = createObjectURL(binaryData);
+                                    pdfURL = "/statics/temp/{{ task.taskName }}.pdf"
+                                    {#pdfURL = "{{ task.taskDescriptionPath }}"#}
+                                    // 嵌入 PDF 文件
+                                    console.log(pdfURL)
+                                    PDFObject.embed(pdfURL, '#pdfContainer', options);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3 visually-hidden mysection" id="section3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                      <div class="container">
+                                          <div class="dropdown mb-3 dropend">
+                                                <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                                                  任务选择({{ task.labelTrys|length }})
+                                                </button>
+                                                <ul class="dropdown-menu" id="labelTrys">
+                                                  {% for labelTry in task.labelTrys %}
+                                                      <li class="bg-white"><a href="#" class="dropdown-item active" id="{{ labelTry.id }}">{{ labelTry.id }}</a></li>
+                                                  {% endfor %}
+                                                </ul>
+                                          </div>
+                              <script>
+                                  $('#labelTrys').find('a').each(function () {
+                                    $(this).click(function () {
+                                        $(this).parent().siblings().find('a').removeClass("active")
+                                        $(this).addClass('active')
+                                        // 调整页面显示内容
+                                        const s = "my"+this.id
+                                        console.log(s)
+                                        const section = document.getElementById(s)
+                                        const sections = document.getElementsByClassName('labelTry')
+                                        for (each of sections){
+                                            $(each).addClass('visually-hidden')
+                                        }
+                                        $(section).removeClass('visually-hidden')
+                                        // 或者写成一句
+                                        //$(this).parent().addClass('active').siblings().removeClass("active")
+                                    })
+                                })
+                              </script>
+                                      </div>
+                                        {% if task.labelTrys|length != 0 %}
+                                            {% for labelTry in task.labelTrys %}
+                                                <div class="visually-hidden labelTry" id="my{{ labelTry.id }}">
+                                                <form action="/creator/{{ name }}/check" method="post">
+                                                    {% csrf_token %}
+                                                    <input class="visually-hidden" name="taskId" type="text" value="{{ task.taskId }}">
+                                                    <input type="text" name="type" style="display: None">
+                                                    <script>
+                                                        type = document.getElementsByName('type')[0]
+                                                        {#type.value = {{ type }}#}
+                                                        let ttype = "{{ type }}"
+                                                        type.value =  "labelTry"
+                                                    </script>
+                                                    <div class="text-warning mb-2"><strong>|</strong>  试标注结果</div>
+                                                    <div class="bg-body-secondary" style="height: 10rem">
+                                                        {{ task.labelTrys.0.labelResult }}
+                                                    </div>
+                                                    <div class="mb-3 mt-3">
+                                                            <label for="text" class="form-label">试标注标注结果评价</label><br>
+                                                            <select name="checkResult" id="" class="form-select form-control">
+                                                                <option value="">试标注标注结果评价</option>
+                                                                <option value="1">优质</option>
+                                                                <option value="2">通过</option>
+                                                                <option value="3">低质</option>
+                                                                <option value="4">未通过</option>
+                                                            </select>
+                                                    </div>
+                                                    <span class="nav-link">
+                                                        <div class="border-bottom">
+                                        {#                  <h6 class="font-weight-normal mb-3">Projects</h6>#}
+                                                        </div>
+                                                        <button type="submit" class="btn btn-block btn-lg btn-behance mt-4"> 提交审核结果 </button>
+                                                    </span>
+                                                </form>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="alert alert-warning">
+                                                <strong>提示！</strong> 暂无试标注任务提交
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3 visually-hidden mysection" id="section4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                {% if task.status != 'unAccept' %}
+                                <div class="text-warning mb-2"><strong>|</strong>&ensp;&ensp;
+                                    <a class="text-decoration-none text-white" href="/creator/{{ name }}/{{ task.taskId }}/labelResult">
+                                        <button class="btn btn-success" name="action" value="labelResultView">
+                                            标注结果查看
+                                        </button>
+                                    </a>
+                                </div>
+                                {% endif %}
+                                {% if task.status == 'checking' %}
+                                <form action="/creator/{{ name }}/check" method="post">
+                                    {% csrf_token %}
+                                    <input class="visually-hidden" name="taskId" type="text" value="{{ task.taskId }}">
+                                    <input type="text" name="type" style="display: None">
+                                    <script>
+                                        type = document.getElementsByName('type')[0]
+                                        {#type.value = {{ type }}#}
+                                        let ttype = "{{ type }}"
+                                        type.value =  "label"
+                                    </script>
+                                    <div class="mb-3 mt-3">
+                                            <label for="text" class="form-label">标注结果评价</label><br>
+                                            <select name="checkResult" id="" class="form-select form-control">
+                                                <option value="">标注结果评价</option>
+                                                <option value="good">优质</option>
+                                                <option value="pass">通过</option>
+                                                <option value="low">低质</option>
+                                                <option value="unpass">未通过</option>
+                                            </select>
+                                    </div>
+                                    <span class="nav-link">
+                                        <div class="border-bottom">
+                        {#                  <h6 class="font-weight-normal mb-3">Projects</h6>#}
+                                        </div>
+                                        <button type="submit" name="action" value="checkResultSubmit" class="btn btn-block btn-lg btn-behance mt-4"> 提交审核结果 </button>
+                                    </span>
+                                </form>
+                                {% elif task.status == 'over' %}
+                                <div class="alert alert-success">
+                                    <strong>该任务已完成！请下载标注结果</strong>
+                                    <a class="text-decoration-none" href="/creator/{{ name }}/{{ task.taskId }}/labelResultDownload">
+                                        <button class="btn btn-success" name="action" value="labelResultDownload" >
+                                                下载标注结果
+                                        </button>
+                                    </a>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-warning">
+                                    <strong>提示！</strong>暂无标注结果提交
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3 visually-hidden mysection" id="section5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                5
+                            </div>
+                        </div>
+                    </div>
+                </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="container-fluid d-flex justify-content-between">
+              <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com 2021</span>
+              <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- partial -->
+        {% endblock %}
+          </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    {% block script %}
+        {{ block.super }}
+          <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+          <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+          <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    {% endblock %}
+    </div>
+</body>
+</html>

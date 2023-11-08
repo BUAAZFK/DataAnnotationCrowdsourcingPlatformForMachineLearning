@@ -1,0 +1,190 @@
+{#<!doctype html>#}
+{% extends "creator/base.html" %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% block links %}
+        {{ block.super }}
+        <title>任务创建</title>
+        <script type="text/javascript" src="/statics/js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="/statics/js/bootstrap.min.js"></script>
+        <script src="/statics/js/jquery.min.js"></script>
+        <link rel="stylesheet" href="/statics/css/flatpickr.min.css">
+        <script src="/statics/js/flatpickr.js"></script>
+    {% endblock %}
+</head>
+<body>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      {% block navbar %}
+          {{ block.super }}
+      {% endblock %}
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        {% block sidebar %}
+            {{ block.super }}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="page-header">
+                      <h3 class="page-title">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                          <i class="mdi mdi-home"></i>
+                        </span> 任务创建
+                      </h3>
+                      <nav aria-label="breadcrumb">
+                        <ul class="breadcrumb">
+                          <li class="breadcrumb-item active" aria-current="page">
+                            <span></span>Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                    <form action="task_create" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">任务简介</h4>
+                                        <div class="mb-3 mt-3">
+                                            <label for="text" class="form-label">任务名称与任务封面</label>
+                                            <input type="text" class="form-control" name="taskName" placeholder="请输入任务名称">
+                                            <input type="file" class="form-control mt-2" id="coverInput" name="cover">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="text" class="form-label">任务内容</label>
+                                            <textarea type="text" rows="5" class="form-control" name="taskContent" placeholder="请输入关于任务的具体内容，包括标注类型，结果要求，结果文件的格式等"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="text" class="form-label">任务需求文件</label></br>
+                                            <div class="alert alert-warning">
+                                                <strong>提示!</strong> 请上传任务具体需求文件！
+                                            </div>
+                                            <input type="file" name="taskDescription">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">任务详细信息</h4>
+                                        <div class="mb-3 mt-3">
+                                            <label for="text" class="form-label">任务类型选择</label><br>
+                                            <select name="taskType" id="" class="form-select form-control">
+                                                <option value="">任务类型选择</option>
+                                                <option value="textClean">文本清洗</option>
+                                                <option value="emotionLable">情感标注</option>
+                                                <option value="textClass">文本分类</option>
+                                                <option value="semanticSeg">语义分割</option>
+                                                <option value="picClass">图片分类</option>
+                                                <option value="objectDetection">目标检测</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 mt-3">
+                                            <label for="text" class="form-label">任务限制时间</label>
+                                            <input type="text" name="taskLimit" id="datetimepicker" class="form-control form-select" placeholder="选择截止时间">
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                  flatpickr("#datetimepicker", {
+                                                    enableTime: true, // 启用时间选择
+                                                    dateFormat: "Y-m-d H:i", // 设置日期和时间格式
+                                                    time_24hr: true, // 使用24小时制
+                                                    onClose: function(selectedDates, dateStr, instance) {
+                                                      // 关闭日期时间选择器后执行的回调函数
+                                                      console.log(dateStr); // 在控制台打印选中的日期时间
+                                                    }
+                                                  });
+                                                });
+                                            </script>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">任务报酬</h4>
+                                        <div class="mb-3 mt-3">
+                                            <label for="text" class="form-label">任务报酬类型选择</label>
+                                            <select name="taskReward" id="" class="form-select form-control">
+                                                <option value="">任务报酬类型选择</option>
+                                                <option value="总包">总包</option>
+                                                <option value="按条">按条</option>
+                                                <option value="按批">按批</option>
+                                            </select>
+                                        </div>
+                                        <div class="mt-3 mb-3">
+                                            <label for="" class="form-label">任务报酬设置</label>
+                                            <input type="text" name="taskReward" class="form-control" placeholder="请输入报酬">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div>
+                                            <h4 class="card-title">数据上传
+                                            </h4>
+                                        </div>
+                                        <div class="mt-3 mb-3">
+                                            <label for="" class="form-label">数据描述</label>
+                                            <textarea type="text" name="dataDescription" class="form-control" placeholder="请输入关于数据的描述，包括数据的整体内容、数据格式、数据量等"></textarea>
+                                        </div>
+                                        <div class="mt-3 mb-3">
+                                            <label for="" class="form-label">数据链接</label>
+                                            <input type="url" name="dLink" class="form-control" placeholder="请输入关于数据的链接，点击直接可以下载zip文件">
+                                        </div>
+                                        <div class="file-loading">
+                                             <input id="singleFile" name="file" type="file" placeholder="">
+                                            <p>数据格式要求：上传.zip文件，根目录下为数据文件（图片或Excel文件等）。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-content-center">
+                          <span class="nav-link">
+                            <a href="/creator/{{ name }}/task_create">
+                            <button class="btn btn-block btn-lg btn-gradient-primary"> 提交审核 </button>
+                            </a>
+                          </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <!-- partial -->
+        {% endblock %}
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    {% block script %}
+        {{ block.super }}
+        <script type="text/javascript">
+            $('#datetimepicker').datetimepicker({
+                language: 'zh-CN', // 中文语言包
+                autoclose: 1, // 选中日期后自动关闭
+                format: 'yyyy-mm-dd', // 日期格式
+                minView: "month", // 最小日期显示单元，这里最小显示月份界面，即可以选择到日
+                todayBtn: 1, // 显示今天按钮
+                todayHighlight: 1, // 显示今天高亮
+              });
+        </script>
+    {% endblock %}
+</body>
+</html>

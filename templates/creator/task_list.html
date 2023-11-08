@@ -1,0 +1,257 @@
+{#<!doctype html>#}
+{% extends "creator/base.html" %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% block links %}
+        {{ block.super }}
+        <script type="text/javascript" src="/statics/js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="/statics/js/bootstrap.min.js"></script>
+        <title>全部任务</title>
+    {% endblock %}
+</head>
+<body>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      {% block navbar %}
+          {{ block.super }}
+      {% endblock %}
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        {% block sidebar %}
+            {{ block.super }}
+            <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-home"></i>
+                    </span> 全部任务
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Overview <i class="mdi mdi-alert-circle-outline icon-sm text-primary align-middle"></i>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+                <div class="row">
+                    <div class="col-12 grid-margin">
+                        <div class="card">
+                          <div class="card-body">
+                              <div class="dropdown mb-3 dropend taskType">
+                                <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                                  任务类别选择
+                                </button>
+                                <ul class="dropdown-menu" id="types">
+                                  <li><a class="dropdown-item active type" href="#" id="tasks">全部任务({{ tasks|length }})</a></li>
+                                  <li><a class="dropdown-item type" href="#" id="rcTasks">待发布任务({{ rcTasks|length }})</a></li>
+                                  <li><a class="dropdown-item type" href="#" id="labelTasks">标注中任务({{ labelTasks|length }})</a></li>
+                                  <li><a class="dropdown-item type" href="#" id="checkTasks">待审核任务({{ checkTasks|length }})</a></li>
+                                  <li><a class="dropdown-item type" href="#" id="problems">申诉({{ problems|length }})</a></li>
+                                </ul>
+                              </div>
+                              <script>
+                                  $('#types').find('a').each(function () {
+                                    $(this).click(function () {
+                                        $(this).parent().siblings().find('a').removeClass("active")
+                                        $(this).addClass('active')
+                                        // 调整页面显示内容
+                                        const s = "my"+this.id
+                                        const section = document.getElementById(s)
+                                        const sections = document.getElementsByClassName('mytype')
+                                        for (each of sections){
+                                            $(each).addClass('visually-hidden')
+                                        }
+                                        $(section).removeClass('visually-hidden')
+                                        currentPage = 1
+                                    })
+                                  })
+                              </script>
+                              <div class="table-responsive mytype" id="mytasks">
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th> 任务ID </th>
+                                        <th> 任务名称 </th>
+                                        <th> 任务内容 </th>
+                                        <th> 任务限制 </th>
+                                        <th> 任务类型 </th>
+                                        <th> 任务状态 </th>
+                                        <th> 创建时间 </th>
+                                        <th> 最近更新 </th>
+                                          <th></th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in tasks %}
+                                            <tr>
+                                                <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId }}">{{ item.taskId }}</a></td>
+                                                <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId }}">{{ item.taskName }}</a></td>
+                                                <td>{{ item.taskContent }}</td>
+                                                <td>{{ item.taskLimit }}</td>
+                                                <td>{{ item.get_taskType_display }}</td>
+                                                <td>{{ item.get_status_display }}</td>
+                                                <td>{{ item.createTime }}</td>
+                                                <td>{{ item.lastUpdate }}</td>
+                                                {% if item.status == "over" %}
+                                                <td>
+                                                    <a href="/creator/{{ name }}/{{ item.taskId }}/labelResultDownload">
+                                                        <button class="btn btn-behance">
+                                                            下载标注结果
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                                {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                  </table>
+                              </div>
+                              <div class="table-responsive mytype visually-hidden" id="myrcTasks">
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th> 任务ID </th>
+                                        <th> 任务名称 </th>
+                                        <th> 任务内容 </th>
+                                        <th> 提交时间 </th>
+                                        <th> 任务类型 </th>
+                                        <th> 审核人员 </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in rcTasks %}
+                                            <tr>
+                                            <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId }}">{{ item.taskId }}</a></td>
+                                            <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId }}">{{ item.taskName }}</a></td>
+                                            <td>{{ item.taskContent }}</td>
+                                            <td>{{ item.subTime }}</td>
+                                            <td>{{ item.get_taskType_display }}</td>
+                                            <td>{{ item.sId_id }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                  </table>
+                              </div>
+                              <div class="table-responsive mytype visually-hidden" id="mylabelTasks">
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th> 任务ID </th>
+                                        <th> 任务名称 </th>
+                                        <th> 任务内容 </th>
+                                        <th> 任务进度 </th>
+                                        <th> 任务接受者 </th>
+                                        <th> 任务接受时间 </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in labelTasks %}
+                                            <tr>
+                                                <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId }}">{{ item.taskId }}</a></td>
+                                                <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId }}">{{ item.taskName }}</a></td>
+                                                <td>{{ item.taskContent }}</td>
+                                                <td>{{ item.process }}</td>
+                                                <td>{{ item.wName }}</td>
+                                                <td>{{ item.acceptTime }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                  </table>
+                              </div>
+                              <div class="table-responsive mytype visually-hidden" id="mycheckTasks">
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th> 任务ID </th>
+                                        <th> 任务名称 </th>
+                                        <th> 任务内容 </th>
+                                        <th> 任务接受者 </th>
+                                        <th> 任务类型 </th>
+                                        <th> 提交时间 </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in checkTasks %}
+                                            <tr>
+                                            <td>{{ item.taskId_id }}</td>
+                                            <td><a class="nav-link" href="/creator/{{ name }}/task_info?taskId={{ item.taskId_id }}&type={{ item.get_checkType_display }}">{{ item.taskName }}</a></td>
+                                            <td>{{ item.taskContent }}</td>
+                                            <td><a class="nav-link" href="/creator/{{ name }}/other_info?type=worker&Id={{ item.wId_id }}"> {{ item.worker }} </a></td>
+                                            <td>{{ item.get_checkType_display }}</td>
+                                            <td>{{ item.subTime }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                  </table>
+                              </div>
+                              <div class="table-responsive mytype visually-hidden" id="myproblems">
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th> 任务ID </th>
+                                        <th> 任务名称 </th>
+                                        <th> 任务内容 </th>
+                                        <th> 任务类型 </th>
+                                        <th> 任务状态 </th>
+                                        <th> 创建时间 </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in problems %}
+                                            <tr>
+                                                <td>{{ item.pId }}</td>
+                                                <td>{{ item.pName }}</td>
+                                                <td>{{ item.pContent }}</td>
+                                                <td>{{ item.get_type_display }}</td>
+                                                <td>{{ item.get_status_display }}</td>
+                                                <td>{{ item.subTime }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                  </table>
+                              </div>
+                              <nav class="float-end mt-2" id="pager" aria-label="Page navigation">
+
+                                  <ul class="pagination">
+                                    <li class="page-item"><a class="page-link" href="#">上一页</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                  </ul>
+
+                              </nav>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="container-fluid d-flex justify-content-between">
+              <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com 2021</span>
+              <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- partial -->
+        {% endblock %}
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    {% block script %}
+        {{ block.super }}
+    {% endblock %}
+</body>
+</html>
